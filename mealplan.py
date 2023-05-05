@@ -11,17 +11,17 @@ def get_lines(file):
     result = []
     with open(file) as f:
         lines = f.read().splitlines()
-        for l in lines:
-            for n in names:
-                if l.startswith(n):
-                    result.append(l.strip())
+    for line in lines:
+        for n in names:
+            if n in line:
+                result.append(line.strip())
     return result
 
 
 def process(lines):
     items = []
-    for l in lines:
-        _, meal = l.split(':')
+    for line in lines:
+        _, meal = line.split(':')
         ingred = meal.split(',')
         for i in ingred:
             part = ''.join(c for c in i if c != '(' and c != ')').split()
@@ -29,7 +29,7 @@ def process(lines):
             if not qty:
                 qty = '0'
             else:
-                qty = qty[0]
+                qty = qty[-1]
             item = ' '.join(z for z in part if z[0].isalpha())
             items.append((item, qty))
     return items
@@ -57,7 +57,7 @@ def main(file):
     current_item = items[0][0]
     current_qty, current_units = split_quantity_units(items[0][1])
     idx = 1
-    items.append(('end', '0g'))
+    items.append(('end', '0g'))  # sentinel
     while idx < len(items):
         item = items[idx][0]
         qty, units = split_quantity_units(items[idx][1])
@@ -68,7 +68,7 @@ def main(file):
             current_item, current_qty, current_units = item, qty, units
         idx += 1
     for r in result:
-        print(f'{r[0]},{r[1]}{r[2]}')
+        print(f'{r[0]} {r[1]}{r[2]}')
 
 
 if __name__ == '__main__':
